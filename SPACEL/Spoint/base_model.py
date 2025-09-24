@@ -268,6 +268,7 @@ class SpointModel():
 
     
     def build_dataset(self, batch_size, device=None):
+        self.batch_size = batch_size
         if device is None:
             device = self.device
         x_train,y_train,x_test,y_test = data_utils.split_shuffle_data(np.array(self.sm_data,dtype=np.float32),np.array(self.sm_labels,dtype=np.float32))
@@ -388,12 +389,16 @@ class SpointModel():
             if self.wandb_config:
                 config.update(self.wandb_config)
 
-            wandb.init(
-                project=self.wandb_project,
-                name=self.wandb_name,
-                config=config,
-                reinit=True
-            )
+            try:
+                wandb.init(
+                    project=self.wandb_project,
+                    name=self.wandb_name,
+                    config=config,
+                    reinit=True
+                )
+            except Exception as e:
+                print(f"Failed to initialize wandb: {e}")
+                self.use_wandb = False
 
         if len(self.history) > 0:
             best_ind = np.where(self.history['is_best'] == 'True')[0][-1]
