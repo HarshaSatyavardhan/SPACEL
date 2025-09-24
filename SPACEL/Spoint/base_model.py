@@ -26,6 +26,10 @@ from torch.utils.data import TensorDataset, DataLoader, RandomSampler, BatchSamp
 from torch.nn.parameter import Parameter
 from torch.nn.modules.module import Module
 from torch.utils.data.dataloader import default_collate
+import wandb
+
+# Set tensor core optimization for RTX 3090
+torch.set_float32_matmul_precision('high')
 
 def compute_kernel(x, y):
     x_size = x.size(0)
@@ -102,19 +106,19 @@ class PredictionModel(nn.Module):
 
 class SpointModel():
     def __init__(
-        self, 
-        st_ad, 
-        sm_ad, 
-        clusters, 
-        used_genes, 
-        spot_names, 
+        self,
+        st_ad,
+        sm_ad,
+        clusters,
+        used_genes,
+        spot_names,
         use_rep,
         st_batch_key=None,
         scvi_layers=2,
         scvi_latent=64,
         scvi_gene_likelihood='zinb',
         scvi_dispersion='gene-batch',
-        latent_dims=32, 
+        latent_dims=32,
         hidden_dims=512,
         infer_losses=['kl','cos'],
         l1=0.01,
@@ -122,7 +126,11 @@ class SpointModel():
         sm_lr=3e-4,
         st_lr=3e-5,
         use_gpu=None,
-        seed=42
+        seed=42,
+        use_wandb=False,
+        wandb_project="spacel",
+        wandb_name="spoint-run1",
+        wandb_config=None
     ):
         if ((use_gpu is None) or (use_gpu is True)) and (torch.cuda.is_available()):
             self.device = 'cuda'
@@ -171,6 +179,12 @@ class SpointModel():
         self.history = pd.DataFrame(columns = ['sm_train_rec_loss','sm_train_infer_loss','sm_test_rec_loss','sm_test_infer_loss','st_train_rec_loss','st_test_rec_loss','st_train_mmd_loss','st_test_mmd_loss','is_best'])
         self.batch_size = None
         self.seed = seed
+
+        # Wandb configuration
+        self.use_wandb = use_wandb
+        self.wandb_project = wandb_project
+        self.wandb_name = wandb_name
+        self.wandb_config = wandb_config
 
     @staticmethod
     def rmse(y_true, y_pred):
@@ -346,10 +360,41 @@ class SpointModel():
         early_stop_max=2000,
         sm_lr=None,
         st_lr=None,
-        rec_w=1, 
+        rec_w=1,
         infer_w=1,
         m_w=1,
     ):
+        # Initialize wandb if enabled
+        if self.use_wandb:
+            config = {
+                'max_steps': max_steps,
+                'sm_step': sm_step,
+                'st_step': st_step,
+                'test_step_gap': test_step_gap,
+                'convergence': convergence,
+                'early_stop': early_stop,
+                'early_stop_max': early_stop_max,
+                'sm_lr': sm_lr or self.sm_lr,
+                'st_lr': st_lr or self.st_lr,
+                'rec_w': rec_w,
+                'infer_w': infer_w,
+                'm_w': m_w,
+                'batch_size': self.batch_size,
+                'latent_dims': self.latent_dims,
+                'hidden_dims': self.hidden_dims,
+                'device': self.device,
+                'seed': self.seed
+            }
+            if self.wandb_config:
+                config.update(self.wandb_config)
+
+            wandb.init(
+                project=self.wandb_project,
+                name=self.wandb_name,
+                config=config,
+                reinit=True
+            )
+
         if len(self.history) > 0:
             best_ind = np.where(self.history['is_best'] == 'True')[0][-1]
             best_loss = self.history['sm_test_infer_loss'][best_ind]
@@ -436,11 +481,32 @@ class SpointModel():
                     },index=[0])
                 ]).reset_index(drop=True)
 
+                # Log metrics to wandb
+                if self.use_wandb:
+                    wandb.log({
+                        'step': step,
+                        'sm_train_infer_loss': sm_train_infer_loss.item(),
+                        'sm_test_infer_loss': sm_test_infer_loss.item(),
+                        'st_train_rec_loss': st_train_rec_loss.item(),
+                        'st_test_rec_loss': st_test_rec_loss.item(),
+                        'st_train_mmd_loss': st_train_mmd_loss.item(),
+                        'st_test_mmd_loss': st_test_mmd_loss.item(),
+                        'best_loss': best_loss,
+                        'early_stop_count': early_stop_count,
+                        'is_best': best_flag == 'True',
+                        'sm_lr': self.sm_optimizer.param_groups[0]['lr'],
+                        'st_lr': self.st_optimizer.param_groups[0]['lr']
+                    }, step=step)
+
                 pbar.set_description(f"Step {step + 1}: Test inference loss={sm_test_infer_loss.item():.3f}",refresh=True)
                 
                 if (early_stop_count > early_stop_max) and early_stop:
                     print('Stop trainning because of loss convergence')
                     break
+
+        # Finish wandb run
+        if self.use_wandb:
+            wandb.finish()
     
     def train_model(
         self,
