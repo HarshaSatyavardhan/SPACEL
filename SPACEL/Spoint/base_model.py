@@ -229,7 +229,9 @@ class SpointModel():
         if dispersion is None:
             dispersion = self.scvi_dispersion
         vae = scvi.model.SCVI(adata, n_layers=n_layers, n_latent=n_latent, gene_likelihood=gene_likelihood,dispersion=dispersion)
-        vae.train(max_epochs=max_epochs,early_stopping=early_stopping,batch_size=batch_size,use_gpu=self.use_gpu)
+        vae.train(max_epochs=max_epochs,early_stopping=early_stopping,batch_size=batch_size,        accelerator = 'gpu' if self.device == 'cuda' else 'cpu',devices= 'auto')    
+
+        
         adata.obsm["X_scVI"] = vae.get_latent_representation()
 
         st_scvi_ad = anndata.AnnData(adata[adata.obs['batch'] != 'simulated'].obsm["X_scVI"])

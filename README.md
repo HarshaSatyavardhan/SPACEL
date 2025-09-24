@@ -68,3 +68,4 @@ python
 If these command line have not return `True`, please check your gpu driver version and `cudatoolkit` version. For more detail, look at [CUDA Toolkit Major Component Versions](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#cuda-major-component-versions).
 
 - Dataset is present here - https://zenodo.org/records/8316334
+- download using - wget "https://zenodo.org/records/8316334/files/data.zip"
