@@ -26,7 +26,7 @@ def init_model(
     n_top_hvg:int=None,
     log2fc_min=0.5,
     pval_cutoff=0.01,
-    pct_diff=None, 
+    pct_diff=None,
     pct_min=0.1,
     use_rep='scvi',
     st_batch_key=None,
@@ -44,12 +44,16 @@ def init_model(
     scvi_latent=128,
     scvi_gene_likelihood='zinb',
     scvi_dispersion='gene-batch',
-    latent_dims=128, 
+    latent_dims=128,
     hidden_dims=512,
     infer_losses=['kl','cos'],
     n_threads=4,
     seed=42,
-    use_gpu=None
+    use_gpu=None,
+    use_wandb=False,
+    wandb_project="spacel",
+    wandb_name="spoint-run1",
+    wandb_config=None
 ):
     """Initialize Spoint model.
     
@@ -120,10 +124,14 @@ def init_model(
         scvi_latent=scvi_latent,
         scvi_gene_likelihood=scvi_gene_likelihood,
         scvi_dispersion=scvi_dispersion,
-        latent_dims=latent_dims, 
+        latent_dims=latent_dims,
         hidden_dims=hidden_dims,
         infer_losses=infer_losses,
         use_gpu=use_gpu,
-        seed=seed
+        seed=seed,
+        use_wandb=use_wandb,
+        wandb_project=wandb_project,
+        wandb_name=wandb_name,
+        wandb_config=wandb_config
     )
     return model
