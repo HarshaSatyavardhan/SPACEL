@@ -1,0 +1,83 @@
+diff --git a/Visium_human_DLPFC_Spoint.ipynb b/Visium_human_DLPFC_Spoint.ipynb
+index b9c0682..e720182 100644
+--- a/Visium_human_DLPFC_Spoint.ipynb
++++ b/Visium_human_DLPFC_Spoint.ipynb
+@@ -216,7 +216,7 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 9,
++   "execution_count": 6,
+    "id": "f91509f1-991d-477d-98b0-f0ec74abc834",
+    "metadata": {
+     "execution": {
+@@ -231,14 +231,52 @@
+    },
+    "outputs": [
+     {
+-     "ename": "TypeError",
+-     "evalue": "init_model() got an unexpected keyword argument 'use_wandb'",
+-     "output_type": "error",
+-     "traceback": [
+-      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+-      "\u001b[0;31mTypeError\u001b[0m                                 Traceback (most recent call last)",
+-      "Cell \u001b[0;32mIn[9], line 5\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[38;5;66;03m# deg - differentially expressed gene method\u001b[39;00m\n\u001b[1;32m      2\u001b[0m \u001b[38;5;66;03m#       this tells to focus on most informative genes and ignore the rest. t-test to find \"marker-genes\"\u001b[39;00m\n\u001b[1;32m      3\u001b[0m \u001b[38;5;66;03m#       sm_size - making 100,000 suedo spots \u001b[39;00m\n\u001b[1;32m      4\u001b[0m \u001b[38;5;28;01mimport\u001b[39;00m\u001b[38;5;250m \u001b[39m\u001b[38;5;21;01mwandb\u001b[39;00m\n\u001b[0;32m----> 5\u001b[0m spoint_model \u001b[38;5;241m=\u001b[39m \u001b[43mSpoint\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43minit_model\u001b[49m\u001b[43m(\u001b[49m\u001b[43msc_ad\u001b[49m\u001b[43m,\u001b[49m\u001b[43mst_ad\u001b[49m\u001b[43m,\u001b[49m\u001b[43mcelltype_key\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[38;5;124;43mcluster_label\u001b[39;49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[43m,\u001b[49m\u001b[43mdeg_method\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[38;5;124;43mt-test\u001b[39;49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[43m,\u001b[49m\u001b[43msm_size\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[38;5;241;43m100000\u001b[39;49m\u001b[43m,\u001b[49m\n\u001b[1;32m      6\u001b[0m \u001b[43m                                 \u001b[49m\u001b[43muse_gpu\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[38;5;28;43;01mTrue\u001b[39;49;00m\u001b[43m,\u001b[49m\n\u001b[1;32m      7\u001b[0m \u001b[43m                                \u001b[49m\u001b[43muse_wandb\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[38;5;28;43;01mTrue\u001b[39;49;00m\u001b[43m,\u001b[49m\u001b[43m           \u001b[49m\u001b[38;5;66;43;03m# Enable wandb\u001b[39;49;00m\n\u001b[1;32m      8\u001b[0m \u001b[43m                                \u001b[49m\u001b[43mwandb_project\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[38;5;124;43m\"\u001b[39;49m\u001b[38;5;124;43mspacel\u001b[39;49m\u001b[38;5;124;43m\"\u001b[39;49m\u001b[43m,\u001b[49m\u001b[43m   \u001b[49m\u001b[38;5;66;43;03m# Project name\u001b[39;49;00m\n\u001b[1;32m      9\u001b[0m \u001b[43m                                \u001b[49m\u001b[43mwandb_name\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[38;5;124;43m\"\u001b[39;49m\u001b[38;5;124;43mspoint-run1\u001b[39;49m\u001b[38;5;124;43m\"\u001b[39;49m\u001b[43m  \u001b[49m\u001b[38;5;66;43;03m# Run name\u001b[39;49;00m\n\u001b[1;32m     10\u001b[0m \u001b[43m                                 \u001b[49m\u001b[43m)\u001b[49m\n",
+-      "\u001b[0;31mTypeError\u001b[0m: init_model() got an unexpected keyword argument 'use_wandb'"
++     "name": "stdout",
++     "output_type": "stream",
++     "text": [
++      "Setting global seed: 42\n"
++     ]
++    },
++    {
++     "name": "stderr",
++     "output_type": "stream",
++     "text": [
++      "/scratch/harsha.vasamsetti/sample_env/lib/python3.10/site-packages/numba/np/ufunc/parallel.py:373: NumbaWarning: The TBB threading layer requires TBB version 2021 update 6 or later i.e., TBB_INTERFACE_VERSION >= 12060. Found TBB_INTERFACE_VERSION = 12050. The TBB threading layer is disabled.\n",
++      "  warnings.warn(problem)\n"
++     ]
++    },
++    {
++     "name": "stdout",
++     "output_type": "stream",
++     "text": [
++      "normalizing counts per cell\n",
++      "    finished (0:00:00)\n",
++      "normalizing counts per cell\n",
++      "    finished (0:00:00)\n",
++      "### Finding marker genes...\n",
++      "ranking genes\n",
++      "    finished: added to `.uns['rank_genes_groups']`\n",
++      "    'names', sorted np.recarray to be indexed by group ids\n",
++      "    'scores', sorted np.recarray to be indexed by group ids\n",
++      "    'logfoldchanges', sorted np.recarray to be indexed by group ids\n",
++      "    'pvals', sorted np.recarray to be indexed by group ids\n",
++      "    'pvals_adj', sorted np.recarray to be indexed by group ids (0:02:06)\n",
++      "cluster_label\n",
++      "Astro L1 FGFR3 FOS            200\n",
++      "Astro L1 FGFR3 MT1G           200\n",
++      "Astro L1-6 FGFR3 ETNPPL       200\n",
++      "Endo L2-5 CLDN5               200\n",
++      "Exc L2-3 LINC00507 RPL9P17    200\n",
++      "                             ... \n",
++      "Inh L6 SST NPY                124\n",
++      "Inh L1 ADARB2 DISP2           109\n",
++      "Inh L1-2 PVALB TAC1            91\n",
++      "VLMC L1-3 CYP1B1               38\n",
++      "Inh L6 LAMP5 ANKRD20A11P       28\n",
++      "Name: count, Length: 120, dtype: int64\n",
++      "### Used gene numbers: 5137\n",
++      "### Initializing sample probability\n",
++      "### Genetating simulated spatial data using scRNA data with mode: unbalance\n"
+      ]
+     }
+    ],
+@@ -273,7 +311,7 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 7,
++   "execution_count": null,
+    "id": "d65153ad-c8cc-42eb-834c-3ab686890133",
+    "metadata": {
+     "execution": {

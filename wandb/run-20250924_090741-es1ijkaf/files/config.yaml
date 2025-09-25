@@ -1,0 +1,107 @@
+_wandb:
+    value:
+        cli_version: 0.22.0
+        code_path: code/spoint_exp-1.py
+        e:
+            erkuqb0f62qj6xss6hl5whn5b4rwoors:
+                codePath: spoint_exp-1.py
+                codePathLocal: spoint_exp-1.py
+                cpu_count: 24
+                cpu_count_logical: 48
+                cudaVersion: "12.8"
+                disk:
+                    /:
+                        total: "234039422976"
+                        used: "84432297984"
+                email: vasamsettiharsha@gmail.com
+                executable: /scratch/harsha.vasamsetti/sample_env/bin/python
+                git:
+                    commit: 42e63bf0ddd77991f8f541d9b923f11035f6db98
+                    remote: https://github.com/HarshaSatyavardhan/SPACEL.git
+                gpu: NVIDIA GeForce RTX 3090
+                gpu_count: 2
+                gpu_nvidia:
+                    - architecture: Ampere
+                      cudaCores: 10496
+                      memoryTotal: "25769803776"
+                      name: NVIDIA GeForce RTX 3090
+                      uuid: GPU-fe45f3c1-ada5-9780-50fe-f294d4d5109b
+                    - architecture: Ampere
+                      cudaCores: 10496
+                      memoryTotal: "25769803776"
+                      name: NVIDIA GeForce RTX 3090
+                      uuid: GPU-2de5cf60-b889-806a-485b-5ca59dc53b9d
+                host: gnode116
+                memory:
+                    total: "270041448448"
+                os: Linux-5.15.0-153-generic-x86_64-with-glibc2.35
+                program: /scratch/harsha.vasamsetti/SPACEL/spoint_exp-1.py
+                python: CPython 3.10.18
+                root: /scratch/harsha.vasamsetti/SPACEL
+                slurm:
+                    job_id: "2504022"
+                startedAt: "2025-09-24T03:37:41.403045Z"
+                writerId: erkuqb0f62qj6xss6hl5whn5b4rwoors
+        m: []
+        python_version: 3.10.18
+        t:
+            "1":
+                - 1
+                - 5
+                - 12
+                - 41
+                - 45
+                - 53
+                - 106
+            "2":
+                - 1
+                - 5
+                - 12
+                - 41
+                - 45
+                - 53
+                - 106
+            "3":
+                - 13
+                - 16
+                - 61
+            "4": 3.10.18
+            "5": 0.22.0
+            "10":
+                - 20
+            "12": 0.22.0
+            "13": linux-x86_64
+batch_size:
+    value: 512
+convergence:
+    value: 0.001
+device:
+    value: cuda
+early_stop:
+    value: false
+early_stop_max:
+    value: 2000
+hidden_dims:
+    value: 512
+infer_w:
+    value: 1
+latent_dims:
+    value: 128
+m_w:
+    value: 1
+max_steps:
+    value: 5000
+rec_w:
+    value: 1
+seed:
+    value: 42
+sm_lr:
+    value: 0.0003
+sm_step:
+    value: 10
+st_lr:
+    value: 3e-05
+st_step:
+    value: 10
+test_step_gap:
+    value: 1
