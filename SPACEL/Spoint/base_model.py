@@ -50,6 +50,55 @@ def compute_mmd(x, y):
     mmd = x_kernel.mean() + y_kernel.mean() - 2 * xy_kernel.mean()
     return mmd
 
+class AttentionEncoder(nn.Module):
+    def __init__(self, input_dims, latent_dims, hidden_dims, num_heads=4, dropout=0.1):
+        super().__init__()
+        # initial projecttion from input dimensions to hidden dimensions
+        self.input_proj = nn.Linear(input_dims, hidden_dims)
+        # multi-head attention
+        self.attention = nn.MultiheadAttention(embed_dim= hidden_dims, num_heads=num_heads,dropout=dropout, batch_first=False)
+
+        # layer normalization & feed forward
+        self.norm1 = nn.LayerNorm(hidden_dims)
+        self.norm2 = nn.LayerNorm(hidden_dims)
+        self.ffn = nn.Sequential(
+            nn.Linear(hidden_dims, hidden_dims*2),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_dims*2, hidden_dims)
+        )
+
+        # final projection to the desired latent space 
+        self.output_proj = nn.Linear(hidden_dims, latent_dims)
+
+    def forward(self, x):
+        # x : input shape (batch_size, input_dims)
+        # 1. projecting to hidden dimenstions
+        x_proj = self.input_proj(x)
+
+        # 2. preparing for attention : treat it as a sequence of lenght 1
+        x_seq = x_proj.unsqueeze(0)  # (1, batch_size, hidden_dims)
+
+        # 3. apply self.attnetion 
+        attn_output, _ = self.attention(x_seq, x_seq, x_seq)
+
+        # 4. Add & Norm (residual connection)
+
+        x = self.norm1(x_seq + attn_output)
+
+        # 5. feed forward network
+
+        ffn_output = self.ffn(x)
+
+        # 6. Add & Norm (residual connection)
+        x = self.norm2(x + ffn_output)
+
+        # 7. squeeze out the sequence diemsntion and project the output 
+        x = x.squeeze(0) # shape (batch_size, hidden_dims)
+        z = self.output_proj(x)
+        return z
+
+
 class PredictionModel(nn.Module):
     def __init__(
         self,
@@ -61,13 +110,16 @@ class PredictionModel(nn.Module):
     ):
         super(PredictionModel, self).__init__()
         
-        self.encoder = nn.Sequential(
-            nn.Linear(input_dims, hidden_dims),
-            nn.LeakyReLU(),
-            nn.LayerNorm(hidden_dims),
-            nn.Dropout(dropout),
-            nn.Linear(hidden_dims, latent_dims),
-        )
+        # self.encoder = nn.Sequential(
+        #     nn.Linear(input_dims, hidden_dims),
+        #     nn.LeakyReLU(),
+        #     nn.LayerNorm(hidden_dims),
+        #     nn.Dropout(dropout),
+        #     nn.Linear(hidden_dims, latent_dims),
+        # )
+
+
+        self.encoder = AttentionEncoder(input_dims = input_dims, latent_dims = latent_dims, hidden_dims = hidden_dims, num_heads = 4, dropout = dropout)
         self.decoder = nn.Sequential(
             nn.Linear(celltype_dims, hidden_dims),
             nn.LeakyReLU(),
@@ -89,8 +141,8 @@ class PredictionModel(nn.Module):
             nn.Softmax(dim=1),
         )
                 
-        nn.init.kaiming_normal_(self.encoder[0].weight)
-        nn.init.kaiming_normal_(self.encoder[4].weight)
+        # nn.init.kaiming_normal_(self.encoder[0].weight)
+        # nn.init.kaiming_normal_(self.encoder[4].weight)
         nn.init.kaiming_normal_(self.decoder[0].weight)
         nn.init.kaiming_normal_(self.decoder[3].weight)
         nn.init.kaiming_normal_(self.decoder[6].weight)
